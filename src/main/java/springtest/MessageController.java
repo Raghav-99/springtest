@@ -12,21 +12,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api")
 public class MessageController {
 	private final IMessageService messageService;
 	public MessageController(@Autowired IMessageService messageService) {
 		this.messageService = messageService;
 	}
 	
-   	@PostMapping("message")
+   	@PostMapping("/message")
 	public ResponseEntity<MessageResponse> sendMessage(@RequestBody String message) throws Exception {
 		messageService.sendMessage(message);
 		return ResponseEntity.status(HttpStatus.CREATED).body(null);
 	}
 	
-	@GetMapping("message")
-	public ResponseEntity<MessageResponse> retrieveMessage(@PathVariable(required = false) String id) throws Exception {
+	@GetMapping("/message/{id}")
+	public ResponseEntity<MessageResponse> retrieveMessage(@PathVariable(value = "id", required = false) String id) throws Exception {
 		int m_id = id == null || id.isBlank() ? 0 : Integer.parseInt(id);
 		MessageEntity message = messageService.retrieveMessage(m_id);
 		return ResponseEntity.ok(new MessageResponse(message, null));
