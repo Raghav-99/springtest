@@ -16,6 +16,8 @@ public class MessageEntity {
 	public int id;
 	@Column(nullable = false)
 	public String message;
+	@Column(nullable = false, columnDefinition = "varchar(12) default 'PENDING'", name = "status")
+	public String messageStatus;
 	
 	@Override
 	public String toString() {

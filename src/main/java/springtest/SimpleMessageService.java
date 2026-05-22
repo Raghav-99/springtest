@@ -19,6 +19,7 @@ public class SimpleMessageService implements IMessageService {
 		if(message.isBlank()) throw new Exception("Not allowed: Cannot send a blank message!");
 		MessageEntity entity = new MessageEntity();
 		entity.message = message;
+		entity.messageStatus = MessageStatus.PENDING.name();
 		repository.save(entity);
 	}
 
