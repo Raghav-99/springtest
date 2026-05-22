@@ -33,7 +33,7 @@ public class MockMessageTest {
 	public void getNonEmptyMessage() throws Exception {
 		
 		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/message")).andReturn();
-		MessageResponse expected = new MessageResponse(new MessageEntity(1, "hello!"), null);
+		MessageResponse expected = new MessageResponse(new MessageEntity(1, "hello!", MessageStatus.PENDING.name()), null);
 		assertEquals(expected.toString(), result.getResponse().getContentAsString());
 	}
 }
