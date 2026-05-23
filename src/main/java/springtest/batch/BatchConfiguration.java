@@ -1,7 +1,10 @@
 package springtest.batch;
 
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.annotation.AfterJob;
 import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConfiguration;
 import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
@@ -19,6 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import jakarta.persistence.EntityManagerFactory;
 import springtest.MessageEntity;
 import springtest.MessageStatus;
+import springtest.sqs.SqsService;
 
 @Configuration
 public class BatchConfiguration extends JdbcDefaultBatchConfiguration {
@@ -28,14 +32,16 @@ public class BatchConfiguration extends JdbcDefaultBatchConfiguration {
 	 * final ExecutionContextDao executionContextDao;
 	 */
 	private final EntityManagerFactory entityManagerFactory;
+	private final SqsService sqsService;
 	@Autowired
 	public BatchConfiguration(
-			EntityManagerFactory entityManagerFactory/*
+			EntityManagerFactory entityManagerFactory, SqsService sqsService/*
 														 * , JobInstanceDao jobInstanceDao, JobExecutionDao
 														 * jobExecutionDao, StepExecutionDao stepExecutionDao,
 														 * ExecutionContextDao executionContextDao
 														 */) {
 		this.entityManagerFactory = entityManagerFactory;
+		this.sqsService = sqsService;
 	}
 
 	
@@ -58,14 +64,24 @@ public class BatchConfiguration extends JdbcDefaultBatchConfiguration {
 	}
 
 	private ItemProcessor<MessageEntity, MessageEntity> messageProcessor() {
-		return item -> {
-			item.messageStatus = MessageStatus.PROCESSED.name();
-			item.message = item.message.toUpperCase();
-			return item;
+		ItemProcessor<MessageEntity, MessageEntity> item = i -> {
+			i.messageStatus = MessageStatus.PROCESSED.name();
+			i.message = i.message.toUpperCase();
+			return i;
 		};
+		return item;
 	}
 
 	private ItemReader<MessageEntity> messageReader() {
 		return new JpaCursorItemReaderBuilder<MessageEntity>().name("jpa.itemreader").queryString("select msg from tblMessage msg where msg.messageStatus='PENDING' OR msg.messageStatus='ERROR'").entityManagerFactory(entityManagerFactory).build();
+	}
+	
+	@AfterJob
+	public void afterJob(JobExecution jobExecution) {
+		if(jobExecution.getExitStatus() == ExitStatus.COMPLETED) {
+			sqsService.sendMessage(jobExecution.toString(), "ExperimentQ");	
+			
+		}
+			
 	}
 }

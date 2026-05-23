@@ -16,12 +16,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import springtest.sqs.SqsService;
+
 @RestController
 @RequestMapping("/job")
 public class MessageJobController {
 	private final JobOperator jobOperator;
 	private final Job job;
-	public MessageJobController(@Autowired JobOperator jobOperator, @Autowired Job job) {
+	
+	@Autowired
+	public MessageJobController(JobOperator jobOperator, @Autowired Job job) {
 		this.jobOperator = jobOperator;
 		this.job = job;
 	}
