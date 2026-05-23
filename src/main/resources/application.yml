@@ -26,3 +26,6 @@ logging:
   level:
     org.springframework.batch: DEBUG
     org.springframework.jdbc: DEBUG
+aws:
+  sqs:
+    url: "https://sqs.eu-north-1.amazonaws.com/325335450979/"
