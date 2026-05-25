@@ -6,6 +6,7 @@ import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConf
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.listener.JobExecutionListener;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -25,7 +26,7 @@ import springtest.MessageStatus;
 import springtest.sqs.SqsService;
 
 @Configuration
-public class BatchConfiguration extends JdbcDefaultBatchConfiguration {
+public class BatchConfiguration extends JdbcDefaultBatchConfiguration implements JobExecutionListener {
 	/*
 	 * private final JobInstanceDao jobInstanceDao; private final JobExecutionDao
 	 * jobExecutionDao; private final StepExecutionDao stepExecutionDao; private
@@ -47,7 +48,7 @@ public class BatchConfiguration extends JdbcDefaultBatchConfiguration {
 	
 	@Bean
 	public Job toUpperJob(Step step, JobRepository jobRepository) {
-		return new JobBuilder("toUpper", jobRepository).start(step).build();
+		return new JobBuilder("toUpper", jobRepository).listener(this.new MessageJobListener()) .start(step).build();
 	}
 	
 	@Bean
@@ -76,12 +77,14 @@ public class BatchConfiguration extends JdbcDefaultBatchConfiguration {
 		return new JpaCursorItemReaderBuilder<MessageEntity>().name("jpa.itemreader").queryString("select msg from tblMessage msg where msg.messageStatus='PENDING' OR msg.messageStatus='ERROR'").entityManagerFactory(entityManagerFactory).build();
 	}
 	
-	@AfterJob
-	public void afterJob(JobExecution jobExecution) {
-		if(jobExecution.getExitStatus() == ExitStatus.COMPLETED) {
-			sqsService.sendMessage(jobExecution.toString(), "ExperimentQ");	
-			
+	class MessageJobListener implements JobExecutionListener {
+		@Override
+		public void afterJob(JobExecution jobExecution) {
+			if(jobExecution.getExitStatus().equals(ExitStatus.COMPLETED)) {
+				System.out.println("Job is done. Sending job execution to SQS...");
+				sqsService.sendMessage(jobExecution.toString(), "ExperimentQ");
+				System.out.println("Sent message: "+ jobExecution.toString());
+			}
 		}
-			
 	}
 }

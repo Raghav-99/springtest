@@ -8,7 +8,8 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 
 @Configuration
 public class SqsConfiguration {
-	public ExtraSqsClient extraSqsClient(@Value("aws.sqs.url") String url) {
+	@Bean
+	public ExtraSqsClient extraSqsClient(@Value("${aws.sqs.url}") String url) {
 		return new ExtraSqsClient(SqsClient.create(), url);
 	}
 	
