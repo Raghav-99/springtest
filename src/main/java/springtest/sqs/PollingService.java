@@ -29,6 +29,7 @@ final class PollingService {
     private class PollRunner implements Runnable {
         @Override
         public void run() {
+        	System.out.println("Started polling SQS...");
             try {
                 while (!Thread.currentThread().isInterrupted()) {
                     ReceiveMessageResponse response = sqsService.consumeMessage("ExperimentQ");;
@@ -37,8 +38,9 @@ final class PollingService {
                         CompletableFuture<Void> task = CompletableFuture.runAsync(() -> doWork(message));
                         ScheduledFuture<Void> heartbeat = messageHeartbeatService.checkHeartbeat(() -> sqsService.checkExtendVisiblity(message, task));
                         task.whenComplete((status, err) -> {
+                        	heartbeat.cancel(false);
+                        	System.out.println("Work is done. Cancelling heartbeat and deleting message...");
                             if(err == null) {
-                                heartbeat.cancel(false);
                                 sqsService.deleteMessage("ExperimentQ", message.receiptHandle());
                             }
                         });

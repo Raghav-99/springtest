@@ -52,8 +52,9 @@ public class SqsService implements InitializingBean {
         return this.sqsClient.getSqsClient().deleteMessage(request);
     }
 
-    public Void checkExtendVisiblity(Message message, Future<?> work) {
+    public Void checkExtendVisiblity(Message message, Future<Void> work) {
         if(!work.isDone()) {
+        	System.out.println("Awaiting work...");
             this.sqsClient.getSqsClient().changeMessageVisibility((builder) -> builder.receiptHandle(message.receiptHandle()).visibilityTimeout(30).build());
         }
         return null;
