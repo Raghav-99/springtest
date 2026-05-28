@@ -10,9 +10,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 @EnableCaching
+@Profile("default")
 public class CaffeineConfiguration implements CachingConfigurer {
 	//@Bean
 	public com.github.benmanes.caffeine.cache.Caffeine<Object, Object> configure() {

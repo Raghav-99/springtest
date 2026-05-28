@@ -18,6 +18,7 @@ import org.springframework.batch.infrastructure.item.database.builder.JpaItemWri
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import jakarta.persistence.EntityManagerFactory;
@@ -26,6 +27,7 @@ import springtest.MessageStatus;
 import springtest.sqs.SqsService;
 
 @Configuration
+@Profile("default")
 public class BatchConfiguration extends JdbcDefaultBatchConfiguration implements JobExecutionListener {
 	/*
 	 * private final JobInstanceDao jobInstanceDao; private final JobExecutionDao

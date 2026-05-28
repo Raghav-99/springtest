@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: "update"
+  datasource:
+    url: #to wire
+    username: "sa"
+    password: ""
