@@ -5,6 +5,8 @@ management:
        include: "health,info,beans,caches"   
 
 spring:
+  profiles:
+    active: "gmail-poc"
   h2:
     console:
       enabled: true

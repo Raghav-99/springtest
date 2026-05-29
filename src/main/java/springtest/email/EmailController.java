@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,13 +22,10 @@ import springtest.email.service.UserService;
 @Profile("gmail-poc")
 public class EmailController implements IEmailController {
     private final EmailService emailService;
-    private final UserService userService;
-    private final AttachmentService attachmentService;
+
     @Autowired
-    public EmailController(EmailService emailService, UserService userService, AttachmentService attachmentService) {
+    public EmailController(EmailService emailService) {
         this.emailService = emailService;
-        this.userService = userService;
-        this.attachmentService = attachmentService;
     }
 
 	@Override
@@ -38,8 +36,8 @@ public class EmailController implements IEmailController {
 	}
 
 	@Override
-    @PostMapping("/receive")
-	public ResponseEntity<IEmailController.EmailResponse> receiveMail(int user) {
+    @PostMapping("/receive/{id}")
+	public ResponseEntity<IEmailController.EmailResponse> receiveMail(@PathVariable("id") int user) {
 		Email email = emailService.receiveMail(user);
         return ResponseEntity.status(HttpStatus.OK).body(new EmailResponse(email, null));
 	}

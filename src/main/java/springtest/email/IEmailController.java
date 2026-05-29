@@ -10,8 +10,13 @@ public interface IEmailController {
 
     ResponseEntity<EmailResponse> receiveMail(int user);
     record EmailResponse(Email email, Exception exception) {
-
+    	@Override
+    	public String toString() {
+    		StringBuilder sb = new StringBuilder();
+    		sb.append(String.format("Email: %s\r\nError: %s", email.toString(), exception.getMessage()));
+    		return sb.toString();
+    	}
     }
 
-    record EmailRequest(String sender, List<String> recepients, String subject, String body, byte[] attachment) {}
+    record EmailRequest(String sender, List<String> recepients, String subject, String body, String attachment) {}
 }

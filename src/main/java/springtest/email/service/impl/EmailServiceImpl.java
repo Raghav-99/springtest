@@ -11,6 +11,8 @@ import springtest.email.service.AttachmentService;
 import springtest.email.service.EmailService;
 import springtest.email.service.UserService;
 
+import java.util.Base64;
+import java.util.Base64.Decoder;
 import java.util.List;
 
 @Service
@@ -31,10 +33,10 @@ public class EmailServiceImpl implements EmailService {
         user = userService.getOrCreateUser(user);
 
         Attachment attachment = null;
-        byte[] blob = emailRequest.attachment();
-        if(blob != null) {
+        String blob = emailRequest.attachment();
+        if(blob != null && !blob.isBlank()) {
             attachment = new Attachment();
-            attachment.setBlob(blob);
+            attachment.setBlob(Base64.getDecoder().decode(blob));
             attachment = attachmentService.saveAttachment(attachment);
         }
 
