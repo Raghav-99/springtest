@@ -1,0 +1,30 @@
+services:
+  backend:
+    image: spring-test:v1
+    build:
+      context: .
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    healthcheck:
+      test: wget http://localhost:8080/actuator/health
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+  db-mysql:
+    image: mysql:8.0.46-bookworm
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./src/main/resources/warmup.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-u", "root", "ping"]
+      start_period: 10s
+      retries: 5
+      interval: 5s
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+
+volumes:
+  mysql-data:

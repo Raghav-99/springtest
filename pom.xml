@@ -3,11 +3,12 @@
   <groupId>io.practice</groupId>
   <artifactId>springtest</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <parent>
-  	<groupId>org.springframework.boot</groupId>
-  	<artifactId>spring-boot-starter-parent</artifactId>
-  	<version>4.0.6</version>
-  </parent>
+  <packaging>jar</packaging>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.0.6</version>
+    </parent>
   <dependencyManagement>
 	  <dependencies>
 	    <dependency>
@@ -19,7 +20,31 @@
 	    </dependency>
 	  </dependencies>
 </dependencyManagement>
-  <dependencies>
+    <!--
+Source - https://stackoverflow.com/a/9689877
+Posted by Olivier Refalo, modified by community. See post 'Timeline' for change history
+Retrieved 2026-05-30, License - CC BY-SA 4.0
+-->
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>springtest.Application</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
   	<dependency>
   		<groupId>org.springframework.boot</groupId>
   		<artifactId>spring-boot-starter-webmvc</artifactId>
