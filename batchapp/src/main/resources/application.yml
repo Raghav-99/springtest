@@ -1,0 +1,13 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,beans,caches"
+spring:
+  spring:
+    batch:
+      jdbc:
+        initialize-schema: "never"
+        continue-on-error: false
+      job:
+        enabled: false
